@@ -21,11 +21,7 @@ describe(ListComponent.name, () => {
         description: 'Pet The Cat',
         status: 'Waiting',
       },
-      { 
-        id: 'd', 
-        description: 'Fix Lighting', 
-        status: 'Completed' 
-      },
+      { id: 'd', description: 'Fix Lighting', status: 'Completed' },
     ];
     beforeEach(() =>
       cy.mount(ListComponent, {
@@ -72,6 +68,28 @@ describe(ListComponent.name, () => {
       cy.get('[data-testid="empty-list-alert"]')
         .should('exist')
         .should('have.text', 'No Items in Your List');
+    });
+  });
+  describe('Interactions', () => {
+    describe('Cycling the Status', () => {
+      it('Emits the output on click', () => {
+        let items: TodoListItemModel[] = [
+          { id: '1', description: 'Tacos', status: 'Later' },
+          { id: '2', description: 'Wash Keyboard', status: 'Now' },
+        ];
+        cy.mount(ListComponent, {
+          componentProperties: {
+            list: items,
+          },
+          autoSpyOutputs: true,
+        });
+
+        cy.get('li').first().find('button').click();
+        cy.get('@onStatusCycledSpy').should(
+          'have.been.calledOnceWith',
+          items[0]
+        );
+      });
     });
   });
 });
